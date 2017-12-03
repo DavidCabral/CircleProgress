@@ -29,6 +29,8 @@ public class CircleProgress extends View {
     private String prefixText = "";
     private String suffixText = "%";
 
+    private boolean textHide;
+
     private final int default_finished_color = Color.rgb(66, 145, 241);
     private final int default_unfinished_color = Color.rgb(204, 204, 204);
     private final int default_text_color = Color.WHITE;
@@ -45,6 +47,7 @@ public class CircleProgress extends View {
     private static final String INSTANCE_PROGRESS = "progress";
     private static final String INSTANCE_SUFFIX = "suffix";
     private static final String INSTANCE_PREFIX = "prefix";
+
 
     private Paint paint = new Paint();
 
@@ -74,6 +77,7 @@ public class CircleProgress extends View {
         unfinishedColor = attributes.getColor(R.styleable.CircleProgress_circle_unfinished_color, default_unfinished_color);
         textColor = attributes.getColor(R.styleable.CircleProgress_circle_text_color, default_text_color);
         textSize = attributes.getDimension(R.styleable.CircleProgress_circle_text_size, default_text_size);
+        textHide = attributes.getBoolean(R.styleable.CircleProgress_circle_text_hide, false);
 
         setMax(attributes.getInt(R.styleable.CircleProgress_circle_max, default_max));
         setProgress(attributes.getInt(R.styleable.CircleProgress_circle_progress, 0));
@@ -142,6 +146,14 @@ public class CircleProgress extends View {
         this.invalidate();
     }
 
+    public boolean isTextHide() {
+        return textHide;
+    }
+
+    public void setTextHide(boolean textHide) {
+        this.textHide = textHide;
+    }
+
     public int getFinishedColor() {
         return finishedColor;
     }
@@ -179,6 +191,10 @@ public class CircleProgress extends View {
     }
 
     public String getDrawText() {
+        if (textHide) {
+            return "";
+        }
+
         return getPrefixText() + getProgress() + getSuffixText();
     }
 
@@ -202,7 +218,8 @@ public class CircleProgress extends View {
         setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
     }
 
-    @Override protected void onDraw(Canvas canvas) {
+    @Override
+    protected void onDraw(Canvas canvas) {
         float yHeight = getProgress() / (float) getMax() * getHeight();
         float radius = getWidth() / 2f;
         float angle = (float) (Math.acos((radius - yHeight) / radius) * 180 / Math.PI);
@@ -245,7 +262,7 @@ public class CircleProgress extends View {
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-        if(state instanceof Bundle) {
+        if (state instanceof Bundle) {
             final Bundle bundle = (Bundle) state;
             textColor = bundle.getInt(INSTANCE_TEXT_COLOR);
             textSize = bundle.getFloat(INSTANCE_TEXT_SIZE);
